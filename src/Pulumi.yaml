@@ -1,0 +1,3 @@
+name: factorio-server
+runtime: nodejs
+description: Hosted Factorio server.
