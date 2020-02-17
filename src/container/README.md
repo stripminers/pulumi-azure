@@ -1,5 +1,9 @@
 # Factorio Server Settings
 
+Description ow how the build is done, which puts
+files in the container/config folder and possibly
+container/mods folder too...
+
 # The base Factorio server container image can found at:
 # https://hub.docker.com/r/factoriotools/factorio/
 # Source: https://github.com/factoriotools
@@ -18,3 +22,4 @@ https://github.com/wube/factorio-data
 docker build \
      --tag test-build ./container && \
 docker run -t test-build
+

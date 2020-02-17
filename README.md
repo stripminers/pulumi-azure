@@ -14,6 +14,9 @@ to edit configuration files or modify the underlying container.
 > folks at https://github.com/factoriotools/, who maintain the Docker container for hosting
 > factorio.
 
+Documentation of sorts here:
+https://wiki.factorio.com/Multiplayer
+
 ## Quickstart
 
 Standup the Pulumi Stack / Infrastructure.
