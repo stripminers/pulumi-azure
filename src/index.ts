@@ -4,13 +4,14 @@ import * as pulumi from "@pulumi/pulumi";
 import * as docker from "@pulumi/docker";
 import * as azure from "@pulumi/azure";
 
+import * as fs from "fs";
+import * as path from "path";
+
 import * as serverSettings from "./server-settings";
+
 
 const stackName = pulumi.getStack();
 const config = new pulumi.Config();
-
-// Generate the game settings...
-const serverSettingsJson = serverSettings.getServerSettings(config);
 
 const resourceGroup = new azure.core.ResourceGroup(`factorio-${stackName}`);
 
@@ -24,15 +25,17 @@ const registry = new azure.containerservice.Registry("registry", {
     resourceGroupName: resourceGroup.name,
 });
 
-
 // Container with the game server, with of our configuration data baked in.
-const factorioGameImage = new docker.Image("factorio-game", {
+// For the build we copy all of the settings files from configuration as appropriate...
+// but then... delet them afterwards.
+
+// NOTE: We aren't calling the cleanup function to delete the files...
+serverSettings.writeSettingsFiles(config, "./container/config");
+
+let factorioGameImage = new docker.Image("factorio-game", {
     imageName: pulumi.interpolate`${registry.loginServer}/factorio-game:latest`,
     build: {
         context: "./container",
-        args: {
-            "SERVER_SETTINGS_JSON": serverSettingsJson,
-        },
     },
     registry: {
         server: registry.loginServer,
@@ -40,7 +43,6 @@ const factorioGameImage = new docker.Image("factorio-game", {
         password: registry.adminPassword,
     },
 });
-
 
 // Actually run the container image on Azure.
 const containerImage = new azure.containerservice.Group("factorio-server", {
@@ -83,8 +85,6 @@ const containerImage = new azure.containerservice.Group("factorio-server", {
     resourceGroupName: resourceGroup.name,
     location: resourceGroup.location,
 });
-
-// Wait until status is running and not waiting...
 
 // Export a "publicIP" output property from the Pulumi stack, which contains
 // the IP address of the container instance running on Azure.

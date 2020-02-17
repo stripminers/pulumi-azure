@@ -2,7 +2,12 @@ config:
   azure:environment: public
   azure:location: WestUS
   factorio-server:factorioLogin:
-    secure: AAABAELfjobzAMgd77l19HosuaHEBzZcPgEym1mlYTrD8y2zlzmy+7Zg3pHi1uR1c/A9QJs=
+    secure: AAABAFC3EyIlxvFmLzSZJ3J4i+F86NzKpYD2aJJZsMbA53QxNcwe
   factorio-server:factorioPassword:
     secure: AAABAEnpfH/sjyROTpNxRkGueA4+4zrL/IbE+xa/jGNw5j449mJ2r/8=
+  factorio-server:gameAutoPause: "false"
+  factorio-server:gameDescription: Oh my, that's a lot of algae...
+  factorio-server:gameName: Stripminers Factorio Server - Seablock
   factorio-server:gamePassword: rockets don't launch themselves
+  factorio-server:gamePublic: "true"
+  factorio-server:gameTags: pulumi,seablock

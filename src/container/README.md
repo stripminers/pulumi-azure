@@ -15,11 +15,6 @@ https://github.com/wube/factorio-data
 
 https://github.com/wube/factorio-data
 
-docker build ./container -t test-build && docker run test-build
-
-
 docker build \
-     --build-arg SERVER_SETTINGS_JSON="${SERVER_SETTINGS_JSON}" \
-     --tag test-build ./container
-
+     --tag test-build ./container && \
 docker run -t test-build

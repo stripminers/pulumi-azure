@@ -1,2 +1,12 @@
 /bin/
 /node_modules/
+
+# Files laid down at build time. They shouldn't be checked-in,
+# and instead generated for Pulumi configuration...
+src/container/config/map-gen-settings.json
+src/container/config/map-settings.json
+src/container/config/rconwp
+src/container/config/server-adminlist.json
+src/container/config/server-banlist.json
+src/container/config/server-whitelist.json
+src/container/config/server-settings.json

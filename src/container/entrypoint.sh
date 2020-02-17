@@ -1,26 +1,28 @@
 #!/bin/bash
-# Simple bootstrapping script that just prints a 
+# Bootstrap the container instance.
 
 echo "==== Factorio Server ===="
-echo ""
 
-echo "Environment Variables:"
+echo "SERVER_SETTINGS_JSON env var:"
 echo ""
-env | sort
+echo ${SERVER_SETTINGS_JSON}
 echo ""
-
 
 echo "Server Settings:"
+ls -al /factorio/config/server-settings.json
 echo ""
 cat /factorio/config/server-settings.json
 echo ""
 
-
-echo "envsubst..."
 echo ""
-envsubst < /factorio/config/server-settings.json
+echo "Starting game..."
 echo ""
 
-echo "Starting Game:"
-echo ""
+echo "BEFORE..."
+cat /factorio/config/before.json
+echo "AFTER..."
+cat /factorio/config/after.json
+
+
+# Launch the game.
 /docker-entrypoint.sh

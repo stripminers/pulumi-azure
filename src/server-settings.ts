@@ -2,6 +2,10 @@
 
 import * as pulumi from "@pulumi/pulumi";
 
+import * as fs from "fs";
+import * as path from "path";
+import { stringify } from "querystring";
+
 // getOptionalBoolean reads a boolean configuration setting, or if not
 // specified the provided default.
 function getOptionalBoolean(config: pulumi.Config, settingName: string, defaultValue: boolean): boolean {
@@ -13,13 +17,16 @@ function getOptionalBoolean(config: pulumi.Config, settingName: string, defaultV
 
 // getServerSettings returns the file contents of Factorio's server-settings.json file,
 // embedding the various settings from the provided configuration object.
-export function getServerSettings(config: pulumi.Config): string {
+function getServerSettings(config: pulumi.Config): string {
     const gameName = config.get("gameName") || "Stripminers Factorio Server";;
     const gameDescription = config.get("gameDescription") || "Rockets don't launch themselves, yo!";
     const gamePassword = config.get("gamePassword") || "";
 
     const gamePublic = getOptionalBoolean(config, "gamePublic", false);
     const gameAutoPause = getOptionalBoolean(config, "gameAutoPause", true);
+    
+    const gameTagsStr = config.get("gameTags") || "pulumi";
+    const gameTags = gameTagsStr.split(",");
 
     const factorioLogin = config.get("factorioLogin") || "";
     const factorioPassword = config.get("factorioPassword") || "";
@@ -29,7 +36,7 @@ export function getServerSettings(config: pulumi.Config): string {
     const settings = {
         name: gameName,
         description: gameDescription,
-        tags: ["stripminers", "pulumi"],
+        tags: gameTags,
     
         // Maximum number of players allowed, admins can join even a full server. 0 means unlimited.
         max_players: 0,
@@ -101,4 +108,53 @@ export function getServerSettings(config: pulumi.Config): string {
     };
 
     return JSON.stringify(settings, null, "    ");
+}
+
+// writeSettingsFiles writes optional Factorio settings files to the target path, filling in
+// any values from the configuration settings provided.
+//
+// Returns a cleanup function to delete the files created.
+//
+// See https://github.com/wube/factorio-data for more information about the settings files
+// and their schema.
+export function writeSettingsFiles(config: pulumi.Config, configFolderPath: string): () => void {
+    const filesCreated: string[] = [];
+
+    // Write the settings file with the contents of the configuration value, as appropriate.
+    const writeConfigFile = (configKey: string, configFileName: string, defaultValue?: string) => {
+        const json = config.get(configKey) || defaultValue;
+        if (json) {
+            const filePath = path.join(configFolderPath, configFileName);
+
+            console.log("Writing settings file:", filePath);
+
+            fs.writeFileSync(filePath, json);
+            filesCreated.push(filePath);
+        }
+    };
+
+    writeConfigFile("mapSettingsJson", "map-settings.json");
+    writeConfigFile("mapGenSettingsJson", "map-gen-settings.example.json");
+    writeConfigFile("serverWhitelist", "server-whitelist.json");
+    writeConfigFile("serverBanlist", "server-banlist.json");
+    writeConfigFile("rconwp", "rconwp");
+    
+    // Honor the full `severSettingsJson` config settings if set, but otherwise
+    // generate filling subsets from parameters...
+    const serverSettingsJson = getServerSettings(config);
+    writeConfigFile("severSettingsJson", "server-settings.json", serverSettingsJson);
+
+
+    // For the admin list, default to using the provided Factorio.com login.
+    writeConfigFile(
+        "serverAdminlist", "server-adminlist.json",
+        JSON.stringify([ config.get("factorioLogin") ]));
+
+    // Return the cleanup function to delete the files created.
+    return () => {
+        for (const fileToDelete of filesCreated) {
+            console.log("Cleaning up settings file:", fileToDelete);
+            fs.unlinkSync(fileToDelete);
+        }
+    };
 }
