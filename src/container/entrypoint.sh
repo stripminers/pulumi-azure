@@ -3,26 +3,15 @@
 
 echo "==== Factorio Server ===="
 
-echo "SERVER_SETTINGS_JSON env var:"
-echo ""
-echo ${SERVER_SETTINGS_JSON}
-echo ""
+if [ -z ${ACI_IP_ADDRESS:-} ]; then
+	
 
-echo "Server Settings:"
-ls -al /factorio/config/server-settings.json
-echo ""
-cat /factorio/config/server-settings.json
-echo ""
-
-echo ""
-echo "Starting game..."
-echo ""
-
-echo "BEFORE..."
-cat /factorio/config/before.json
-echo "AFTER..."
-cat /factorio/config/after.json
-
+    echo "Environment Variable ACI_IP_ADDRESS not set."
+    echo "Refusing to start until it is."
+        
+    # Loop indefinitely.
+    while true; do printf "."; sleep 60; done
+fi
 
 # Launch the game.
 /docker-entrypoint.sh

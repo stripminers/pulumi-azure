@@ -27,8 +27,8 @@ const registry = new azure.containerservice.Registry("registry", {
 
 // Container with the game server, with of our configuration data baked in.
 // For the build we copy all of the settings files from configuration as appropriate...
-// but then... delet them afterwards.
-
+// but then... delete them afterwards.
+//
 // NOTE: We aren't calling the cleanup function to delete the files...
 serverSettings.writeSettingsFiles(config, "./container/config");
 
@@ -82,8 +82,15 @@ const containerImage = new azure.containerservice.Group("factorio-server", {
     ipAddressType: "public",
     osType: "linux",
 
+    dnsNameLabel: `factorio-${pulumi.getStack()}`,
+
     resourceGroupName: resourceGroup.name,
     location: resourceGroup.location,
+}, {
+    // Since the DNS label / FQDN are in a global namespace,
+    // we need to delete the older instance before we can recreate
+    // it (which will happen for most updates.)
+    deleteBeforeReplace: true,
 });
 
 // Export a "publicIP" output property from the Pulumi stack, which contains

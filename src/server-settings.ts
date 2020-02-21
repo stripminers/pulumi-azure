@@ -137,7 +137,7 @@ export function writeSettingsFiles(config: pulumi.Config, configFolderPath: stri
     writeConfigFile("mapGenSettingsJson", "map-gen-settings.example.json");
     writeConfigFile("serverWhitelist", "server-whitelist.json");
     writeConfigFile("serverBanlist", "server-banlist.json");
-    writeConfigFile("rconwp", "rconwp");
+    writeConfigFile("rconpw", "rconpw");
     
     // Honor the full `severSettingsJson` config settings if set, but otherwise
     // generate filling subsets from parameters...

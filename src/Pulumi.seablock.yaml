@@ -7,7 +7,9 @@ config:
     secure: AAABAEnpfH/sjyROTpNxRkGueA4+4zrL/IbE+xa/jGNw5j449mJ2r/8=
   factorio-server:gameAutoPause: "false"
   factorio-server:gameDescription: Oh my, that's a lot of algae...
-  factorio-server:gameName: Stripminers Factorio Server - Seablock
-  factorio-server:gamePassword: rockets don't launch themselves
+  factorio-server:gameName: (Experimenting with hosted Factorio. Not a real game,
+    sorry.)
+  factorio-server:gamePassword: asdf
   factorio-server:gamePublic: "true"
   factorio-server:gameTags: pulumi,seablock
+  factorio-server:rconpw: asdf
